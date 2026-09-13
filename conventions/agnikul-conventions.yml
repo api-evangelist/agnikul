@@ -1,0 +1,200 @@
+generated: '2026-09-12'
+method: derived
+source: >-
+  mcp/agnikul-ucp-mcp-tools.json (live tools/list, HTTP 200), https://shop.agnikul.in/agents.md (200),
+  https://shop.agnikul.in/robots.txt (200), https://shop.agnikul.in/.well-known/ucp (200), and
+  response headers observed on a live POST to https://shop.agnikul.in/api/ucp/mcp (200)
+name: Agnikul API conventions
+slug: agnikul
+surface: Agnikul Cosmos Store Commerce MCP API (UCP dev.ucp.shopping over MCP)
+
+auth:
+  style: none for transport; buyer-approved payment instrument at the point of purchase
+  detail: See authentication/agnikul-authentication.yml.
+
+idempotency:
+  supported: true
+  coverage: partial
+  scope:
+  - complete_checkout
+  mechanism: request field
+  field: meta.idempotency-key
+  required: true
+  type: string
+  retention: not documented
+  evidence: >-
+    complete_checkout inputSchema — meta.required is ["ucp-agent","idempotency-key"], and
+    meta.properties["idempotency-key"] is {"type":"string","description":"An idempotency key for
+    completing the checkout."}. Every other tool's meta.required is ["ucp-agent"] alone.
+  note: >-
+    One of five write operations carries replay protection. The single money-moving operation is the
+    one that has it, which is the right place for it, but create_cart, create_checkout, update_cart
+    and update_checkout are NOT idempotent and accept no key — an agent that retries create_checkout
+    blindly will create a second checkout. Cancel the orphan with cancel_checkout.
+
+pagination:
+  style: cursor
+  applies_to: [search_catalog]
+  request:
+    cursor: catalog.pagination.cursor
+    limit: catalog.pagination.limit
+    limit_default: 10
+  response:
+    cursor_field: pagination.cursor
+  note: >-
+    lookup_catalog is bounded rather than paginated — it resolves a batch of identifiers in one call.
+    With eleven products in the whole catalog, pagination is theoretical here.
+
+identifiers:
+  style: Shopify Global IDs (GIDs)
+  formats:
+  - entity: Product
+    format: gid://shopify/Product/{id}
+  - entity: ProductVariant
+    format: gid://shopify/ProductVariant/{id}
+  - entity: Cart
+    format: 'gid://shopify/Cart/{id}?key={secret}'
+    note: The cart GID carries a capability secret in a query parameter — treat it as a bearer credential.
+  - entity: Checkout
+    format: gid://shopify/Checkout/{id}
+  - entity: Order
+    format: gid://shopify/Order/{id}
+  alternate_key_space:
+    style: URL handles
+    used_by: the storefront JSON routes (/products/{handle}.json)
+    note: >-
+      The two key spaces do not interoperate. Nothing published lets a client turn a handle into a GID
+      or back.
+
+money:
+  representation: integer minor units paired with an ISO 4217 currency code
+  shape: '{"amount": 2500, "currency": "USD"}'
+  example: '{"amount": 2500, "currency": "USD"} is $25.00'
+  store_currency: INR
+  filters: catalog price min/max filters are also minor units
+  note: >-
+    Stated identically in all 13 tool descriptions, with the instruction to convert to major units
+    before quoting a price to a buyer. The catalogue itself is priced in INR (99 to 1,499).
+
+localization:
+  mechanism: context object accepted on catalog, cart and checkout calls
+  fields: [address_country, address_region, postal_code, language, currency]
+  language_format: IETF BCP 47
+  country_format: ISO 3166-1 alpha-2
+  currency_format: ISO 4217
+  provider_guidance: >-
+    "Use buyer context. Pass context.address_country and context.currency for accurate pricing and
+    availability." — https://shop.agnikul.in/agents.md
+
+agent_identity:
+  field: meta.ucp-agent
+  required: true
+  applies_to: all 13 tools
+  format: object carrying the agent's UCP profile URI
+  note: Required identity input; the server identifies the calling agent by profile URI.
+
+versioning:
+  scheme: dated protocol versions
+  current: '2026-08-25'
+  also_supported: ['2026-04-08', '2026-01-23']
+  discovery: https://shop.agnikul.in/.well-known/ucp
+  negotiation: per-version profile URLs are published under /.well-known/ucp/{version}
+  mcp_protocol_version: '2025-06-18'
+
+error_envelope:
+  transport: JSON-RPC 2.0 error object
+  storefront_http: HTML 404 pages on the Shopify storefront; empty-body 404 with application/json on some /api paths
+  rfc9457: false
+  detail: See errors/agnikul-problem-types.yml.
+
+request_tracing:
+  supported: true
+  header: x-request-id
+  format: '<uuid>-<epoch-seconds>'
+  observed: '2026-09-12, POST initialize, HTTP 200'
+  also:
+  - header: server-timing
+    carries: 'processing/db durations, edge, country, asn, requestID, servedBy'
+  - header: x-shopify-ucp-mcp-api-version
+    value_observed: '2026-08-25'
+    meaning: Echoes the UCP protocol version that served the request — usable for version pinning.
+  note: >-
+    Quote x-request-id when reporting a problem. There is no developer support channel to report it
+    to; the store publishes no contact page for the API and the corporate contacts are sales,
+    careers, vendor and general enquiry addresses.
+
+rate_limit_signalling:
+  documented: true
+  quantified: false
+  statement: '"Respect rate limits. The MCP endpoint is rate-limited per IP. Back off on 429 responses."'
+  source: https://shop.agnikul.in/agents.md
+  standard_headers: none documented and none observed on 200 responses
+  cost_headers_observed: [shopify-complexity-score, shopify-complexity-score-v2]
+  budget_headers_observed: []
+  note: A cost signal is returned with no budget or remaining balance, so pacing cannot be computed.
+  detail: See rate-limits/agnikul-rate-limits.yml.
+
+dry_run_mode:
+  supported: false
+  grade: absent
+  note: >-
+    There is no test mode, sandbox store, simulated checkout or test payment token. An agent cannot
+    rehearse a purchase. create_cart and create_checkout are the closest thing to a rehearsal — real
+    objects with real totals that move no money — and both are reversible (see below).
+
+reversibility:
+  applicable: true
+  grade: documented
+  summary: >-
+    Every write this store exposes to an agent is reversible up to the moment of payment, and only up
+    to that moment. Cart and checkout each have an explicit cancel tool. After complete_checkout
+    succeeds the API offers no reversal at all — no refund, void or cancel tool exists — and Cosmos
+    Store publishes NO refund, return, shipping, terms or privacy policy of any kind, so there is no
+    stated post-purchase window to record. That is why this grades `documented` rather than
+    `verified`: the reversal paths are real and named in the contract, and the window for the one
+    that matters most is nowhere stated.
+  operations:
+  - write: create_cart
+    reversal: cancel_cart
+    operation_id: cancel_cart
+    window: Any time before the cart is converted to a checkout and paid. No expiry is stated.
+    window_stated: false
+    grade: documented
+    source: mcp/agnikul-ucp-mcp-tools.json
+  - write: create_checkout
+    reversal: cancel_checkout
+    operation_id: cancel_checkout
+    window: Before complete_checkout. Once completed there is no cancel path in the contract.
+    window_stated: false
+    grade: documented
+    source: mcp/agnikul-ucp-mcp-tools.json
+  - write: update_cart / update_checkout
+    reversal: re-issue the same call with the prior values
+    operation_id: update_cart, update_checkout
+    window: unbounded while the cart or checkout is open
+    window_stated: false
+    grade: documented
+  - write: complete_checkout
+    reversal: none in the API
+    operation_id: null
+    window: >-
+      NOT STATED ANYWHERE. Cosmos Store publishes no refund or return policy — /policies/refund-policy,
+      /policies/shipping-policy, /policies/terms-of-service and /policies/privacy-policy all return
+      HTTP 404 as of 2026-09-12 — and neither agents.md nor llms.txt names a return window. An agent
+      must NOT tell a buyer that a completed purchase can be undone, and must not invent a window.
+    window_stated: false
+    grade: documented
+    probed:
+    - url: https://shop.agnikul.in/policies/refund-policy
+      http_status: 404
+    - url: https://shop.agnikul.in/policies/terms-of-service
+      http_status: 404
+  human_channel: curious@agnikul.in (general enquiries — there is no store support address)
+
+cross_links:
+  errors: errors/agnikul-problem-types.yml
+  lifecycle: lifecycle/agnikul-lifecycle.yml
+  authentication: authentication/agnikul-authentication.yml
+  scopes: scopes/agnikul-scopes.yml
+  rate_limits: rate-limits/agnikul-rate-limits.yml
+  data_model: data-model/agnikul-data-model.yml

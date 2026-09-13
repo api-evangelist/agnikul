@@ -1,0 +1,140 @@
+generated: '2026-09-12'
+method: searched
+source: >-
+  registry.npmjs.org search (HTTP 200) and per-package metadata (HTTP 200), pypi.org/pypi/agnikul/json
+  (404), rubygems.org/api/v1/gems/agnikul.json (404), crates.io/api/v1/crates/agnikul (404),
+  packagist.org/packages/agnikul/agnikul.json (404), api.github.com/orgs/AgnikulCosmos (200) and its
+  repository listing (200), plus https://agnikul.in/llms.txt and https://shop.agnikul.in/agents.md (200)
+name: Agnikul packages and SDKs
+slug: agnikul
+
+package_count: 0
+official_sdk_count: 0
+packages: []
+
+finding: >-
+  Agnikul publishes no client library for any Agnikul API, in any registry. This is not the usual
+  gap-to-be-filed: the company's only programmable surface is a remote MCP endpoint that an agent
+  POSTs JSON-RPC to, and an MCP endpoint is consumed by an MCP client, not by a vendor SDK. There is
+  nothing here for an SDK to wrap. No SDKs pointer is claimed.
+
+registry_probes:
+- registry: npm
+  query: agnikul
+  endpoint: https://registry.npmjs.org/-/v1/search?text=agnikul&size=20
+  http_status: 200
+  total_results: 2
+  matches:
+  - name: '@agnikul-ui/cli'
+    version: 0.1.66
+    published: '2025-04-21'
+    official: false
+    first_party_verified: false
+    note: >-
+      A Panda CSS component-library CLI ("agnikul-ui components add button accordion") published by
+      the npm user lavanya_ponnambalam. It declares no homepage, no repository and no organization
+      link, so there is no published evidence tying it to Agnikul Cosmos Private Limited. The name is
+      also a common Indian word and surname. Recorded as an unverified name match, NOT as an Agnikul
+      artifact, and it is a front-end design system in any case — not a client for any Agnikul API.
+  - name: '@agnikul-ui/panda-preset'
+    version: 0.1.6
+    published: '2025-03-19'
+    official: false
+    first_party_verified: false
+    note: Same publisher, same scope, same caveat. A Panda CSS preset, not an API client.
+- registry: pypi
+  package: agnikul
+  endpoint: https://pypi.org/pypi/agnikul/json
+  http_status: 404
+  version: null
+  published: null
+  note: Checked, package does not exist.
+- registry: rubygems
+  package: agnikul
+  endpoint: https://rubygems.org/api/v1/gems/agnikul.json
+  http_status: 404
+  version: null
+  published: null
+  note: Checked, gem does not exist.
+- registry: crates.io
+  package: agnikul
+  endpoint: https://crates.io/api/v1/crates/agnikul
+  http_status: 404
+  version: null
+  published: null
+  note: Checked, crate does not exist.
+- registry: packagist
+  package: agnikul/agnikul
+  endpoint: https://packagist.org/packages/agnikul/agnikul.json
+  http_status: 404
+  version: null
+  published: null
+  note: Checked, package does not exist.
+- registry: cdn
+  probed: false
+  version: null
+  published: null
+  note: >-
+    No script tag, unpkg or jsDelivr reference to an Agnikul-authored library appears in
+    https://agnikul.in/llms.txt, https://shop.agnikul.in/agents.md, or either storefront HTML.
+    Nothing to look up.
+
+github_org:
+  url: https://github.com/AgnikulCosmos
+  api: https://api.github.com/orgs/AgnikulCosmos
+  http_status: 200
+  verified_as_first_party: probable
+  verification: >-
+    The org name matches the company exactly and one repo is described as "Axon, AI Chatbot of
+    Agnikul Cosmos". The org sets no blog, email, description or location field, so there is no
+    hard link back to agnikul.in, and agnikul.in links no GitHub org from any page. Treated as
+    probable-first-party and recorded, but no GitHubOrganization pointer is claimed on that strength
+    alone.
+  created_at: '2018-12-23'
+  public_repos: 16
+  first_party_sdk_for_agnikul: false
+  note: >-
+    None of the sixteen public repositories is a client library for an Agnikul API, and none contains
+    an OpenAPI, AsyncAPI, .proto or WSDL — the full recursive trees of the three plausible candidates
+    were scanned. The org is internal business and ground-systems tooling: forks of the Frappe /
+    ERPNext / HRMS / india-compliance stack (five separate Frappe forks), an internal login module, an
+    AI chatbot server, a PID screen, and Orbit-Server, described as "IMCS ... a centralized system for
+    acquiring, distributing, monitoring, logging, and analyzing launch and barge-control command and
+    telemetry data" — which is the most interesting repository here and is empty of any published
+    contract (its default branch returns no tree).
+  notable_repositories:
+  - name: Orbit-Server
+    description: >-
+      IMCS is a centralized system for acquiring, distributing, monitoring, logging, and analyzing
+      launch and barge-control command and telemetry data.
+    fork: false
+    pushed: '2026-05-19'
+    contract_published: false
+    note: >-
+      Named like a real telemetry/command system. The GitHub tree API returns Not Found for its
+      default branch, so there is nothing public in it to harvest.
+  - name: AXON-SERVER
+    description: Axon, AI Chatbot of Agnikul Cosmos
+    fork: false
+    pushed: '2026-07-03'
+    contract_published: false
+    note: Contains an api.py; no OpenAPI, no schema, no published endpoint.
+  - name: AGKL-AXON-SERVER
+    language: Python
+    fork: false
+    pushed: '2026-02-13'
+    contract_published: false
+  - name: erpnext-v15
+    fork: true
+    note: One of several Frappe-ecosystem forks — vendor software run internally, not an Agnikul product.
+
+third_party_recommended:
+- name: Shop skill
+  url: https://shop.app/SKILL.md
+  owner: Shopify
+  official_to_agnikul: false
+  recommended_by: https://shop.agnikul.in/agents.md
+  note: >-
+    The store's own agent instructions recommend installing Shopify's cross-store Shop skill for
+    buy-for-me agents. It is Shopify's artifact, not Agnikul's, and is recorded here only because the
+    merchant names it as the preferred client.

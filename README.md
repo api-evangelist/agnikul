@@ -64,5 +64,21 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Agnikul is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.nasdaqprivatemarket.com/
+Agnikul Cosmos Private Limited is an Indian aerospace manufacturer and commercial launch service
+provider founded in 2017 and incubated at IIT Madras, Chennai. It builds Agnibaan, a configurable
+small-lift orbital launch vehicle powered by Agnilet, a single-piece fully 3D-printed semi-cryogenic
+engine, and flies it from Dhanush (ALP-01), India's first privately built launchpad.
+
+**Agnikul publishes no API for its launch business.** There is no developer portal, no OpenAPI, and
+no mission or manifest API on any host; launch is sold per kilogram through an HTML enquiry form.
+What this profile records is the machine-readable surface Agnikul does publish:
+
+- A hand-authored corporate `llms.txt` and `llms-full.txt` at agnikul.in, with a self-declared
+  "Last verified" date and time-sensitive claims flagged as such.
+- A live, anonymous agent-commerce surface on the Cosmos Store merchandise shop at
+  shop.agnikul.in — a `/.well-known/ucp` merchant profile implementing Universal Commerce Protocol
+  2026-08-25, and two Model Context Protocol endpoints offering fourteen catalog, cart, checkout,
+  order and policy tools.
+
+- https://agnikul.in/
+- https://shop.agnikul.in/agents.md

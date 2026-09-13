@@ -1,0 +1,43 @@
+generated: '2026-09-12'
+method: probed
+source: https://shop.agnikul.in/.well-known/openid-configuration (HTTP 200, scopes_supported)
+name: Agnikul OAuth scopes
+slug: agnikul
+docs: null
+docs_note: >-
+  Agnikul publishes no scopes or permissions reference page of its own. The scope list below is read
+  verbatim from the machine-readable OIDC discovery document served at shop.agnikul.in; the
+  descriptions are the standard meanings of those identifiers, not Agnikul prose.
+
+authorization_server:
+  issuer: https://shopify.com/authentication/85860712758
+  discovery: https://shop.agnikul.in/.well-known/openid-configuration
+  authorization_endpoint: https://shopify.com/authentication/85860712758/oauth/authorize
+  token_endpoint: https://shopify.com/authentication/85860712758/oauth/token
+
+scope_count: 4
+scopes:
+- name: openid
+  standard: OpenID Connect Core
+  description: Request an ID token identifying the signed-in store customer.
+- name: email
+  standard: OpenID Connect Core
+  description: Release the email and email_verified claims for the signed-in customer.
+- name: customer-account-api:full
+  standard: Shopify Customer Account API
+  description: >-
+    Full access to the customer account surface on behalf of the signed-in customer — orders,
+    addresses and profile for this shop.
+- name: customer-account-mcp-api:full
+  standard: Shopify Customer Account MCP API
+  description: >-
+    Full access to the customer-account MCP surface on behalf of the signed-in customer. This is the
+    authenticated companion to the anonymous commerce MCP endpoint; it is the scope an agent would
+    hold to act on a specific buyer's account rather than on the public catalog. Agnikul publishes no
+    endpoint for it.
+
+not_scoped:
+  surface: Agnikul Cosmos Store Commerce MCP API (https://shop.agnikul.in/api/ucp/mcp)
+  note: >-
+    The UCP commerce endpoint is anonymous — it accepts no bearer token and therefore has no scope
+    model. Buyer authority is carried per-call by the payment instrument, not by an OAuth grant.

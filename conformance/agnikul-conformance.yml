@@ -1,0 +1,268 @@
+generated: '2026-09-12'
+method: probed
+source: >-
+  https://shop.agnikul.in/.well-known/ucp (200), /.well-known/openid-configuration (200),
+  /.well-known/oauth-authorization-server (200), /.well-known/oauth-protected-resource (200),
+  /llms.txt (200), /agents.md (200), https://agnikul.in/llms.txt (200), and live MCP initialize +
+  tools/list against https://shop.agnikul.in/api/ucp/mcp (200)
+name: Agnikul standards conformance
+slug: agnikul
+
+conformance:
+- id: mcp
+  name: Model Context Protocol
+  version: '2025-06-18'
+  conforms: true
+  evidence:
+    probe: 'POST initialize -> {"protocolVersion":"2025-06-18","serverInfo":{"name":"universal-commerce","version":"0.1.0"}}'
+    url: https://shop.agnikul.in/api/ucp/mcp
+    http_status: 200
+    capabilities: tools.listChanged, prompts.listChanged, resources.listChanged, logging
+
+- id: jsonrpc2
+  name: JSON-RPC 2.0
+  conforms: true
+  evidence:
+    probe: 'tools/list response carries {"jsonrpc":"2.0","id":1,"result":{...}}'
+    url: https://shop.agnikul.in/api/ucp/mcp
+    http_status: 200
+
+- id: json-schema-2020-12
+  name: JSON Schema Draft 2020-12
+  conforms: true
+  evidence:
+    probe: >-
+      Every one of the 13 tool inputSchemas declares
+      "$schema":"https://json-schema.org/draft/2020-12/schema".
+    file: mcp/agnikul-ucp-mcp-tools.json
+
+- id: oauth2
+  name: OAuth 2.0
+  conforms: true
+  evidence:
+    url: https://shop.agnikul.in/.well-known/oauth-authorization-server
+    http_status: 200
+    detail: 'RFC 8414 authorization server metadata; authorization_code grant, S256 PKCE, RS256 id tokens.'
+
+- id: oidc
+  name: OpenID Connect Discovery 1.0
+  conforms: true
+  evidence:
+    url: https://shop.agnikul.in/.well-known/openid-configuration
+    http_status: 200
+    detail: >-
+      issuer, token/authorization/end_session endpoints, jwks_uri, RS256 id_token signing, public
+      subject types, standard claims.
+
+- id: rfc9728
+  name: 'RFC 9728 — OAuth 2.0 Protected Resource Metadata'
+  conforms: true
+  evidence:
+    url: https://shop.agnikul.in/.well-known/oauth-protected-resource
+    http_status: 200
+    detail: 'resource https://shop.agnikul.in, authorization_servers[], bearer_methods_supported: ["header"]'
+
+- id: llmstxt
+  name: llms.txt
+  conforms: true
+  evidence:
+    urls:
+    - url: https://agnikul.in/llms.txt
+      http_status: 200
+      content_type: text/plain
+    - url: https://shop.agnikul.in/llms.txt
+      http_status: 200
+      content_type: text/markdown
+    detail: >-
+      Two independent llms.txt files. The corporate one is hand-authored about the launch business,
+      carries a "Last verified" date, marks time-sensitive claims, and links a companion
+      /llms-full.txt. The store one is the Shopify-generated agent-instruction template, mirrored at
+      /agents.md and cross-referenced from the store's robots.txt.
+
+- id: idempotency
+  name: Idempotent write semantics
+  conforms: partial
+  evidence:
+    detail: >-
+      complete_checkout requires meta.idempotency-key. No other write tool (create_cart,
+      create_checkout, update_cart, update_checkout) declares or accepts one.
+    file: mcp/agnikul-ucp-mcp-tools.json
+
+- id: pagination
+  name: Cursor pagination
+  conforms: true
+  evidence:
+    detail: >-
+      search_catalog accepts catalog.pagination.cursor and .limit (default 10) and returns
+      pagination.cursor for the next page.
+    file: mcp/agnikul-ucp-mcp-tools.json
+
+- id: rfc9457
+  name: 'RFC 9457 — Problem Details for HTTP APIs'
+  conforms: false
+  evidence:
+    detail: >-
+      No application/problem+json anywhere. MCP errors use the JSON-RPC error object; storefront and
+      corporate errors are HTML pages.
+
+- id: rfc9116
+  name: 'RFC 9116 — security.txt'
+  conforms: false
+  evidence:
+    probed:
+    - url: https://agnikul.in/.well-known/security.txt
+      http_status: 404
+    - url: https://shop.agnikul.in/.well-known/security.txt
+      http_status: 404
+
+- id: rfc9727
+  name: 'RFC 9727 — api-catalog well-known URI'
+  conforms: false
+  evidence:
+    probed:
+    - url: https://agnikul.in/.well-known/api-catalog
+      http_status: 404
+    - url: https://shop.agnikul.in/.well-known/api-catalog
+      http_status: 404
+
+- id: apisjson
+  name: 'APIs.json'
+  conforms: false
+  evidence:
+    probed:
+    - url: https://agnikul.in/apis.json
+      http_status: 404
+    - url: https://agnikul.in/.well-known/apis.json
+      http_status: 404
+    - url: https://shop.agnikul.in/apis.json
+      http_status: 404
+
+- id: aauth
+  name: 'AAuth — draft-hardt-oauth-aauth-protocol'
+  conforms: false
+  evidence:
+    probed:
+    - url: https://agnikul.in/.well-known/aauth-resource.json
+      http_status: 404
+    - url: https://shop.agnikul.in/.well-known/aauth-resource.json
+      http_status: 404
+
+- id: a2a
+  name: 'A2A Agent Card'
+  conforms: false
+  evidence:
+    probed:
+    - url: https://agnikul.in/.well-known/agent-card.json
+      http_status: 404
+    - url: https://agnikul.in/.well-known/agent.json
+      http_status: 404
+    - url: https://shop.agnikul.in/.well-known/agent-card.json
+      http_status: 404
+    - url: https://shop.agnikul.in/.well-known/agent.json
+      http_status: 404
+
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence:
+    detail: >-
+      No OpenAPI is published on any Agnikul host. Probed /openapi.json, /openapi.yaml,
+      /swagger.json, /v1/openapi.json, /api-docs and /redoc against agnikul.in, www.agnikul.in and
+      shop.agnikul.in; all 404. The machine-readable contract this company publishes is the MCP tool
+      schema set, not an OpenAPI.
+
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence:
+    detail: >-
+      No event, streaming or webhook surface of any kind is published. Not applicable rather than
+      deficient — there is no event stream here for a spec to describe.
+
+domain_standards:
+- id: ucp
+  name: Universal Commerce Protocol
+  market: agentic commerce / retail checkout
+  declared_version: '2026-08-25'
+  conforms: true
+  graded: declared-in-contract
+  evidence:
+    url: https://shop.agnikul.in/.well-known/ucp
+    http_status: 200
+    location: 'ucp.services["dev.ucp.shopping"][0] and ucp.capabilities[*]'
+    detail: >-
+      The merchant profile is the UCP discovery document itself, not a prose claim. It declares the
+      dev.ucp.shopping service over MCP transport at a named endpoint plus eight namespaced
+      capabilities.
+  capabilities_declared:
+  - dev.ucp.shopping.cart
+  - dev.ucp.shopping.checkout
+  - dev.ucp.shopping.fulfillment
+  - dev.ucp.shopping.discount
+  - dev.ucp.shopping.order
+  - dev.ucp.shopping.catalog.search
+  - dev.ucp.shopping.catalog.lookup
+  - dev.shopify.catalog
+  fulfillment_config:
+    multi_destination: []
+    method_combinations: [[shipping]]
+  spec: https://ucp.dev/2026-08-25/specification/overview/
+  schema: https://ucp.dev/2026-08-25/services/shopping/mcp.openrpc.json
+  schema_ownership_note: >-
+    The OpenRPC schema and JSON Schemas referenced by the profile are published by ucp.dev and
+    shopify.dev — the standards body and the platform, not Agnikul. They are cited as the standard
+    Agnikul declares conformance to and are deliberately NOT saved into this repo as Agnikul's own
+    contract.
+  agent_confirmation: >-
+    The tool names returned by the live server (search_catalog, lookup_catalog, get_product,
+    create_cart, update_cart, cancel_cart, get_cart, create_checkout, update_checkout,
+    complete_checkout, cancel_checkout, get_checkout, get_order) match the declared capability set
+    one-for-one.
+
+- id: payment-handler-profiles
+  name: UCP payment handler profiles
+  conforms: true
+  evidence:
+    url: https://shop.agnikul.in/.well-known/ucp
+    http_status: 200
+    handlers:
+    - com.google.pay 2026-01-11 (Google Pay API v2, PAN_ONLY + CRYPTOGRAM_3DS, gateway shopify)
+    - dev.shopify.card 2026-01-15
+    note: >-
+      Only two handlers. dev.shopify.shop_pay is NOT declared, even though the store's own agents.md
+      tells agents to route through Shop Pay when buyer approval cannot be obtained.
+
+- id: iso4217
+  name: 'ISO 4217 currency codes'
+  conforms: true
+  evidence:
+    detail: All prices are integer minor units paired with an ISO 4217 code, stated in every tool description.
+- id: iso3166-1
+  name: 'ISO 3166-1 alpha-2 country codes'
+  conforms: true
+  evidence:
+    detail: context.address_country and billing address country are documented as alpha-2.
+- id: bcp47
+  name: 'IETF BCP 47 language tags'
+  conforms: true
+  evidence:
+    detail: context.language is documented as an IETF BCP 47 language tag.
+
+space_sector_standards:
+  probed: false
+  note: >-
+    The launch-services business has no machine-readable contract at all, so there is nothing to test
+    against a space-sector interface standard (CCSDS, SANA, XTCE, SpaceX-style payload ICDs). This is
+    a reward-only category and no conformance is invented to fill it. For the record, the company
+    does publish one relevant quality credential in prose: Rocket Factory-01 is described as AS9100D
+    certified in https://agnikul.in/llms-full.txt. That is a manufacturing quality-management
+    certification, not an API or information-security one, and it is not carried into a Compliance
+    pointer.
+
+compliance_certifications:
+  published: false
+  note: >-
+    Agnikul publishes no trust center and names no information-security certification (SOC 2,
+    ISO 27001, PCI DSS, HIPAA, FedRAMP) on any page probed. Card data never touches an Agnikul system
+    in the agent flow — it is tokenized by Google Pay or Shopify's card handler — but no PCI
+    attestation is published by Agnikul itself. No Compliance pointer is claimed.

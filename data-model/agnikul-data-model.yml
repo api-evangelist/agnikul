@@ -1,0 +1,131 @@
+generated: '2026-09-12'
+method: derived
+source: >-
+  mcp/agnikul-ucp-mcp-tools.json (live tools/list, HTTP 200) — entity shapes read from the tool
+  inputSchemas; identifier formats read from the schema descriptions; product shape confirmed against
+  https://shop.agnikul.in/collections/all/products.json (HTTP 200)
+name: Agnikul Cosmos Store data model
+slug: agnikul
+caveat: >-
+  Derived from an MCP tool schema set, not from an OpenAPI — Agnikul publishes none. Request shapes
+  are fully specified by the tool inputSchemas; RESPONSE shapes are not published as schemas at all,
+  so the response side of every entity below is inferred from the tool descriptions and from an
+  observed storefront products.json. Fields marked response_shape_published: false are honest gaps,
+  not omissions.
+
+entities:
+- name: Product
+  id_format: gid://shopify/Product/{id}
+  alternate_key: URL handle (storefront JSON routes only)
+  reachable_by: [search_catalog, lookup_catalog, get_product]
+  response_shape_published: false
+  observed_fields_storefront: [id, title, handle, body_html, published_at, created_at, updated_at, vendor, product_type, tags, variants, images, options]
+  note: Eleven products in the live catalog on 2026-09-12.
+- name: ProductVariant
+  id_format: gid://shopify/ProductVariant/{id}
+  reachable_by: [lookup_catalog, get_product]
+  response_shape_published: false
+  note: The unit a line item actually references — line_items[].item.id is a Product Variant ID.
+- name: Cart
+  id_format: 'gid://shopify/Cart/{id}?key={secret}'
+  reachable_by: [create_cart, get_cart, update_cart, cancel_cart]
+  request_fields: [line_items, buyer, context, attribution, fulfillment, discounts]
+  response_shape_published: false
+  security_note: The cart identifier embeds a capability secret in a query parameter — treat it as a bearer credential.
+- name: Checkout
+  id_format: gid://shopify/Checkout/{id}
+  reachable_by: [create_checkout, get_checkout, update_checkout, complete_checkout, cancel_checkout]
+  request_fields: [payment, line_items, buyer, context, attribution, cart_id, fulfillment, discounts]
+  response_shape_published: false
+- name: Order
+  id_format: gid://shopify/Order/{id}
+  reachable_by: [get_order]
+  response_shape_published: false
+  note: Produced by complete_checkout, which returns an order ID and a Thank You Page URL.
+- name: LineItem
+  embedded_in: [Cart, Checkout]
+  required_fields: [item, quantity]
+  fields: [id, quantity, item.id]
+  note: item.id is a Product Variant ID; the line item's own id addresses it for updates.
+- name: Buyer
+  embedded_in: [Cart, Checkout]
+  response_shape_published: false
+- name: FulfillmentSelection
+  embedded_in: [Cart, Checkout]
+  declared_capability: dev.ucp.shopping.fulfillment
+  config:
+    multi_destination: []
+    method_combinations: [[shipping]]
+  note: >-
+    From the UCP profile: one destination, shipping only. No pickup, no local delivery, no split
+    shipment.
+- name: Discount
+  embedded_in: [Cart, Checkout]
+  field: discounts
+  declared_capability: dev.ucp.shopping.discount
+- name: PaymentInstrument
+  embedded_in: [Checkout]
+  handlers: [com.google.pay, dev.shopify.card]
+  note: Required by complete_checkout. See authentication/agnikul-authentication.yml.
+- name: Money
+  shape: '{"amount": <integer minor units>, "currency": "<ISO 4217>"}'
+  note: Not an addressable entity; the value type every price in the contract uses.
+
+relationships:
+- from: Cart
+  to: LineItem
+  kind: has_many
+  via: line_items
+- from: LineItem
+  to: ProductVariant
+  kind: belongs_to
+  via: item.id
+- from: ProductVariant
+  to: Product
+  kind: belongs_to
+  via: parent product in lookup_catalog grouping
+- from: Checkout
+  to: Cart
+  kind: belongs_to
+  via: cart_id
+  note: Optional — a checkout can also be created directly from line_items with no cart.
+- from: Checkout
+  to: LineItem
+  kind: has_many
+  via: line_items
+- from: Checkout
+  to: PaymentInstrument
+  kind: has_many
+  via: payment
+- from: Checkout
+  to: Order
+  kind: has_one
+  via: complete_checkout result
+- from: Cart
+  to: Buyer
+  kind: has_one
+  via: buyer
+- from: Checkout
+  to: Buyer
+  kind: has_one
+  via: buyer
+
+id_prefixes:
+- prefix: 'gid://shopify/'
+  meaning: Shopify Global ID namespace. Every addressable entity in the contract uses it.
+  domain: platform
+
+gaps:
+- No response schemas are published for any entity — only request schemas.
+- >-
+  Two disjoint key spaces (GIDs for the MCP surface, URL handles for the storefront JSON routes) with
+  no published mapping between them.
+- No Customer entity is reachable anonymously; customer data sits behind the OAuth surface.
+
+out_of_scope:
+  note: >-
+    There is no data model for Agnikul's launch business. No mission, manifest, payload, vehicle
+    configuration or launch-window entity is exposed through any machine-readable interface. The
+    booking form at https://agnikul.in/book/ collects launch location, orbital inclination band,
+    payload mass band, orbital altitude and integration site — the closest thing to a published
+    mission schema Agnikul has — but it is an HTML form, not an API.

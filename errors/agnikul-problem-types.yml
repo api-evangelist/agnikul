@@ -1,0 +1,115 @@
+generated: '2026-09-12'
+method: derived
+source: >-
+  Observed live responses from https://shop.agnikul.in/api/ucp/mcp (200 JSON-RPC),
+  https://shop.agnikul.in/openapi.json (404), https://shop.agnikul.in/policies/refund-policy (404),
+  https://agnikul.in/.well-known/security.txt (404), plus the rate-limit statement in
+  https://shop.agnikul.in/agents.md
+name: Agnikul error catalog
+slug: agnikul
+format: json-rpc-2.0
+rfc9457: false
+rfc9457_note: >-
+  Agnikul does not publish application/problem+json. There is no error reference page on any Agnikul
+  host. Every entry below was observed on a live response or is stated in the store's own agent
+  instructions.
+
+envelopes:
+- name: JSON-RPC 2.0 error
+  applies_to: https://shop.agnikul.in/api/ucp/mcp and /api/mcp
+  shape: '{"jsonrpc":"2.0","id":<id>,"error":{"code":<int>,"message":"<string>","data":<any>}}'
+  method: derived
+  note: >-
+    MCP transport errors use the JSON-RPC 2.0 error object. Tool-level failures may instead be
+    returned in the result with isError set, per MCP. Neither the code range nor the tool error
+    vocabulary is documented by Agnikul.
+- name: Shopify storefront HTML 404
+  applies_to: https://shop.agnikul.in/*
+  shape: 'text/html error page'
+  method: probed
+  observed_at: 'GET https://shop.agnikul.in/policies/refund-policy'
+- name: WordPress HTML 404
+  applies_to: https://agnikul.in/*
+  shape: 'text/html error page'
+  method: probed
+  observed_at: 'GET https://agnikul.in/.well-known/security.txt'
+
+problem_types:
+- id: storefront-not-found
+  status: 404
+  title: Not Found (HTML)
+  envelope: Shopify storefront HTML 404
+  observed: true
+  evidence:
+    urls:
+    - https://shop.agnikul.in/.well-known/security.txt
+    - https://shop.agnikul.in/.well-known/agent-card.json
+    - https://shop.agnikul.in/policies/refund-policy
+    content_type: text/html; charset=utf-8
+  remediation: >-
+    Unmatched storefront paths return an HTML 404 page, not JSON. A client that only checks the
+    status code is fine; one that parses the body must not assume JSON.
+
+- id: empty-json-not-found
+  status: 404
+  title: Not Found (empty JSON body)
+  envelope: none
+  observed: true
+  evidence:
+    urls:
+    - https://shop.agnikul.in/openapi.json
+    - https://shop.agnikul.in/swagger.json
+    - https://shop.agnikul.in/apis.json
+    content_type: application/json; charset=utf-8
+    body_length: 0
+  remediation: >-
+    A small set of paths answer 404 with content-type application/json and a zero-length body. Do not
+    attempt to parse; treat a zero-length body as absence.
+
+- id: wordpress-not-found
+  status: 404
+  title: Not Found (WordPress)
+  envelope: WordPress HTML 404
+  observed: true
+  evidence:
+    urls:
+    - https://agnikul.in/.well-known/security.txt
+    - https://agnikul.in/privacy-policy/
+    - https://agnikul.in/terms-conditions/
+  remediation: >-
+    Note that the last two are linked from the company's own /llms.txt. An agent following that file
+    to the privacy policy or terms will land on a 404.
+
+- id: rate-limited
+  status: 429
+  title: Too Many Requests
+  envelope: not documented
+  observed: false
+  documented: true
+  evidence:
+    url: https://shop.agnikul.in/agents.md
+    quote: 'Respect rate limits. The MCP endpoint is rate-limited per IP. Back off on 429 responses.'
+  remediation: >-
+    Back off on 429. No Retry-After header, limit, window or burst is documented, and none was
+    observed on 200 responses, so back-off must be exponential and blind.
+
+- id: checkout-completion-error
+  status: null
+  title: Errors encountered completing a checkout
+  envelope: JSON-RPC 2.0 result payload
+  observed: false
+  documented: true
+  evidence:
+    source: mcp/agnikul-ucp-mcp-tools.json
+    quote: >-
+      complete_checkout "Completes a checkout and returns the checkout result. Returns details about
+      the completed checkout, including order ID, Thank You Page URL, or any errors encountered."
+  remediation: >-
+    complete_checkout can fail inside a successful transport response. Inspect the result payload for
+    errors before telling a buyer the order was placed. The specific error vocabulary is not published.
+
+gaps:
+- No published error reference page on any Agnikul host.
+- No RFC 9457 problem+json.
+- No documented tool-level error codes or checkout-failure vocabulary.
+- No documented 429 response headers.

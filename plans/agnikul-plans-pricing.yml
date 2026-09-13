@@ -1,0 +1,62 @@
+generated: '2026-09-12'
+method: searched
+source: >-
+  https://agnikul.in/book/ (HTTP 200), https://agnikul.in/llms.txt and /llms-full.txt (HTTP 200),
+  https://shop.agnikul.in/agents.md (HTTP 200), https://shop.agnikul.in/collections/all/products.json
+  (HTTP 200)
+name: Agnikul plans and pricing
+slug: agnikul
+
+plan_count: 0
+plans: []
+note: >-
+  Agnikul publishes no plans of any kind, for either of its two commercial surfaces. Launch services
+  are quoted per mission and the price is not published; the merchandise store sells retail goods and
+  has no plan table. There is no API pricing page, no developer plan and no metered tier anywhere —
+  the commerce MCP endpoint is free and anonymous, and money changes hands as a retail purchase
+  inside the checkout it exposes.
+
+api_access_model:
+  cost_to_agent: none
+  credential_required: false
+  metering: not published
+  gate: >-
+    No commercial gate on the API. The commercial gate is the retail transaction itself, priced per
+    product in ISO 4217 minor units returned by search_catalog and get_product.
+
+launch_services_pricing:
+  published: false
+  model: per-kilogram, vehicle configured to the payload, low minimum order quantity
+  model_source: https://agnikul.in/llms-full.txt
+  quantified: false
+  access: >-
+    A three-step HTML enquiry form at https://agnikul.in/book/ (launch location, orbital inclination,
+    payload mass band, orbital altitude, integration site, then contact details) that routes to
+    payloadpeople@agnikul.in.
+  quote: >-
+    "Per kilogram, with the vehicle configured to the payload and a low minimum order quantity.
+    Current pricing is quoted per mission — contact payloadpeople@agnikul.in."
+  self_identified_gap: >-
+    The company's own llms-full.txt lists publishing an indicative per-kg figure as an open item:
+    "A published indicative figure would make Agnikul the citable source for cost questions; if
+    pricing stays private, leave as-is." Recorded because the provider states the gap itself.
+  note: >-
+    A sales-gated enterprise quote, recorded as such rather than as a plan. The form does publish the
+    real dimensions of a quote — launch region, inclination band, payload-mass band, altitude and
+    integration site — which is more structure than most launch providers expose.
+
+product_pricing:
+  published: true
+  machine_readable: true
+  currency: INR
+  product_count: 11
+  price_range_minor_units: [9900, 149900]
+  surfaces:
+  - https://shop.agnikul.in/products/{handle}.json
+  - https://shop.agnikul.in/collections/{handle}/products.json
+  - search_catalog / get_product on the commerce MCP endpoint
+  format: integer minor units plus ISO 4217 currency code
+  note: >-
+    Retail merchandise prices (mission t-shirts, hoodies, caps, mugs, keychains, stickers) are fully
+    machine-readable and reachable without credentials. That is the whole of Agnikul's published,
+    machine-readable pricing.

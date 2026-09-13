@@ -1,23 +1,164 @@
 aid: agnikul
-name: Agnikul
-description: 'Agnikul is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+name: Agnikul Cosmos
+description: >-
+  Agnikul Cosmos Private Limited is an Indian aerospace manufacturer and commercial launch service
+  provider founded in 2017 and incubated at the National Centre for Combustion Research and
+  Development at IIT Madras, Chennai. It builds Agnibaan, a configurable small-lift orbital launch
+  vehicle powered by Agnilet — a single-piece, fully 3D-printed semi-cryogenic rocket engine — and
+  flies it from Dhanush (ALP-01), India's first privately built launchpad, at Satish Dhawan Space
+  Centre. On 30 May 2024 its Agnibaan SOrTeD suborbital demonstrator became the first vehicle to fly
+  from a privately built launchpad in India. Agnikul publishes NO API for its launch business: launch
+  is sold per kilogram through an HTML enquiry form, with no developer portal, no OpenAPI and no
+  mission or manifest API anywhere. What it does publish is a genuine, hand-authored corporate
+  /llms.txt and /llms-full.txt about the launch programme, and — on its Cosmos Store merchandise
+  storefront at shop.agnikul.in — a live, anonymous agent-commerce surface: a /.well-known/ucp
+  merchant profile implementing the Universal Commerce Protocol 2026-08-25 and two Model Context
+  Protocol endpoints offering fourteen catalog, cart, checkout, order and policy tools.
+image: https://agnikul.in/wp-content/uploads/2024/06/Agnikul-Logo.png
 url: https://raw.githubusercontent.com/api-evangelist/agnikul/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-09-12'
 modified: '2026-09-12'
 tags:
 - Company
-apis: []
+- Aerospace
+- Space
+- Launch Services
+- Satellites
+- Manufacturing
+- Additive Manufacturing
+- India
+- E-Commerce
+- Agentic Commerce
+- Universal Commerce Protocol
+- Model Context Protocol
+- Shopify
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: agnikul:agnikul-cosmos-store-commerce-mcp-api
+  name: Agnikul Cosmos Store Commerce MCP API
+  description: >-
+    The agent-facing commerce surface for Cosmos Store, Agnikul's branded merchandise shop,
+    implementing the Universal Commerce Protocol (dev.ucp.shopping) over MCP. Thirteen tools cover
+    catalog search and lookup, product detail, cart create/update/cancel, checkout
+    create/update/complete/cancel, and order retrieval; a second endpoint adds one policy-and-FAQ
+    question-answering tool. Anonymous — no API key or OAuth token is required to list tools or
+    search the catalog — but completing a checkout requires an idempotency key and contemporaneous
+    buyer approval of payment. This sells t-shirts and mission patches, not launches.
+  image: https://shop.agnikul.in/cdn/shop/files/logo.png?v=1705750282
+  humanURL: https://shop.agnikul.in/agents.md
+  baseURL: https://shop.agnikul.in/api/ucp/mcp
+  x-base-note: >-
+    The endpoint named in the store's own agents.md and llms.txt, probed live at HTTP 200 on
+    2026-09-12. The machine-readable /.well-known/ucp profile names the equivalent Shopify permanent
+    domain form https://40146b.myshopify.com/api/ucp/mcp; both answer with identical tool sets.
+  tags:
+  - Commerce
+  - Catalog
+  - Cart
+  - Checkout
+  - Orders
+  - Agentic Commerce
+  properties:
+  - type: Documentation
+    url: https://shop.agnikul.in/agents.md
+  - type: MCPServer
+    url: mcp/agnikul-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/agnikul-tool-crosswalk.yml
+  - type: WellKnown
+    url: well-known/agnikul-ucp.json
+  - type: Authentication
+    url: authentication/agnikul-authentication.yml
+  - type: Conventions
+    url: conventions/agnikul-conventions.yml
+  - type: Idempotency
+    url: conventions/agnikul-conventions.yml
+  - type: DataModel
+    url: data-model/agnikul-data-model.yml
+  - type: ErrorCatalog
+    url: errors/agnikul-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/agnikul-rate-limits.yml
+- aid: agnikul:agnikul-cosmos-store-storefront-json-api
+  name: Agnikul Cosmos Store Storefront JSON API
+  description: >-
+    The read-only storefront JSON endpoints Cosmos Store documents for agents in its own /agents.md
+    and /llms.txt — product JSON at /products/{handle}.json, collection product listings at
+    /collections/{handle}/products.json, product search, and the sitemap. No authentication is
+    required. These are Shopify Online Store routes served on Agnikul's own shop subdomain and named
+    by the store in its own agent instructions.
+  image: https://shop.agnikul.in/cdn/shop/files/logo.png?v=1705750282
+  humanURL: https://shop.agnikul.in/llms.txt
+  baseURL: https://shop.agnikul.in
+  x-base-note: >-
+    The storefront origin IS the API base for this entry, not a marketing URL standing in for one.
+    https://shop.agnikul.in/collections/all/products.json returned HTTP 200 application/json with
+    eleven products on 2026-09-12. The sibling api entry deliberately carries a longer base
+    (/api/ucp/mcp) because the MCP endpoint is a single POST target, not a path space.
+  tags:
+  - Products
+  - Collections
+  - Catalog
+  - Sitemap
+  properties:
+  - type: Documentation
+    url: https://shop.agnikul.in/agents.md
+  - type: LLMsTxt
+    url: llms/agnikul-shop-llms.txt
 common:
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://agnikul.in/
+- type: Documentation
+  url: https://shop.agnikul.in/agents.md
+- type: Blog
+  url: https://agnikul.in/media/
+- type: Support
+  url: https://agnikul.in/contact-us/
+- type: MCPServer
+  url: mcp/agnikul-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/agnikul-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/agnikul-llms.txt
+- type: WellKnown
+  url: well-known/agnikul-well-known.yml
+- type: Authentication
+  url: authentication/agnikul-authentication.yml
+- type: OAuthScopes
+  url: scopes/agnikul-scopes.yml
+- type: Conventions
+  url: conventions/agnikul-conventions.yml
+- type: Idempotency
+  url: conventions/agnikul-conventions.yml
+- type: ErrorCatalog
+  url: errors/agnikul-problem-types.yml
+- type: RateLimits
+  url: rate-limits/agnikul-rate-limits.yml
+- type: Plans
+  url: plans/agnikul-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/agnikul-lifecycle.yml
+- type: Conformance
+  url: conformance/agnikul-conformance.yml
+- type: DataModel
+  url: data-model/agnikul-data-model.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Packages
+  url: packages/agnikul-packages.yml
+- type: DomainSecurity
+  url: security/agnikul-domain-security.yml
+x-enrichment:
+  date: '2026-09-12'
+  status: enriched
+  artifacts_added: 27
+  pass: local-v3
+x-coverage:
+  state: covered

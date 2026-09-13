@@ -1,0 +1,208 @@
+generated: '2026-09-12'
+method: probed
+source: live GET probes of the named /.well-known/ path list on every Agnikul host, 2026-09-12
+name: Agnikul well-known documents
+slug: agnikul
+
+hosts:
+- host: agnikul.in
+  role: corporate website (WordPress) — launch services
+  path_echo_control: passed
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/agnikul-negative-control-7f3ab91c.json
+    status: 404
+    note: Negative control. A 404 here confirms the host does not echo arbitrary well-known paths.
+
+- host: www.agnikul.in
+  role: www alias of the corporate website
+  path_echo_control: passed
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/agnikul-negative-control-7f3ab91c.json
+    status: 404
+
+- host: shop.agnikul.in
+  role: Cosmos Store — Shopify storefront, and the only Agnikul host serving machine-readable discovery documents
+  path_echo_control: passed
+  documents:
+  - path: /.well-known/ucp
+    status: 200
+    content_type: application/json
+    file: well-known/agnikul-ucp.json
+    note: >-
+      Universal Commerce Protocol merchant profile. Declares UCP 2026-08-25 plus two prior versions,
+      the dev.ucp.shopping service over MCP transport, eight namespaced shopping capabilities and two
+      payment handlers (Google Pay, Shopify card). merchant_name "Cosmos Store", merchant_origin
+      "shop.agnikul.in". The same body is served at /.well-known/ucp.json (byte-identical).
+  - path: /.well-known/ucp.json
+    status: 200
+    content_type: application/json
+    file: well-known/agnikul-ucp.json
+    note: Byte-identical to /.well-known/ucp; saved once.
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: well-known/agnikul-openid-configuration.json
+    note: >-
+      Shopify customer-account OIDC discovery. Issuer https://shopify.com/authentication/85860712758,
+      which matches the gatewayMerchantId in the store's own UCP Google Pay handler config.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: well-known/agnikul-oauth-authorization-server.json
+    note: RFC 8414 authorization server metadata. Byte-identical body to the OIDC discovery document.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    file: well-known/agnikul-oauth-protected-resource.json
+    note: >-
+      RFC 9728 protected-resource metadata. resource https://shop.agnikul.in,
+      authorization_servers ["https://shopify.com/authentication/85860712758"], bearer via header.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/agnikul-negative-control-7f3ab91c.json
+    status: 404
+    note: >-
+      Negative control. 404, so the four 200s on this host are real documents and not a path-echoing
+      catch-all.
+
+other_agent_documents:
+- path: /llms.txt
+  host: agnikul.in
+  status: 200
+  content_type: text/plain
+  file: llms/agnikul-llms.txt
+  note: >-
+    A genuine, hand-authored corporate llms.txt about the launch-services business — not a Shopify
+    template. Names nine site pages, seven key entities (Agnibaan, Agnilet, Agnite, Dhanush, SOrTeD,
+    Rocket Factory-01, LFAMM) and four contact addresses by enquiry type.
+- path: /llms-full.txt
+  host: agnikul.in
+  status: 200
+  content_type: text/plain
+  saved_locally: true
+  committed: false
+  note: >-
+    22,679 bytes of company reference prose, linked from /llms.txt. Deliberately NOT committed —
+    `*-llms-full.txt` is gitignored across this network. Two observations worth recording: the file
+    ends with a section headed "Internal notes for the Agnikul web team — DELETE THIS SECTION BEFORE
+    PUBLISHING", which is live on the public web; and it carries a self-declared freshness stamp
+    ("Last verified: 23 July 2026") with time-sensitive items marked as such, which is better
+    practice than most published llms.txt files.
+- path: /llms.txt
+  host: shop.agnikul.in
+  status: 200
+  content_type: text/markdown
+  file: llms/agnikul-shop-llms.txt
+  note: Shopify-generated agent instructions for the store. Mirrors /agents.md with minor differences.
+- path: /agents.md
+  host: shop.agnikul.in
+  status: 200
+  content_type: text/markdown
+  file: llms/agnikul-agents.md
+- path: /sitemap_agentic_discovery.xml
+  host: shop.agnikul.in
+  status: 200
+  content_type: application/xml
+  note: A dedicated agentic-discovery sitemap, listed first in the store's sitemap index.
+- path: /robots.txt
+  host: shop.agnikul.in
+  status: 200
+  note: >-
+    Unusually rich. Carries a commented agent preamble naming /agents.md, /.well-known/ucp and the
+    UCP/MCP endpoint, and states the payment rule in the crawl file itself: "Checkouts are for
+    humans. Do NOT complete checkout, payment, or order placement automatically."
+- path: /robots.txt
+  host: agnikul.in
+  status: 200
+  note: >-
+    WordPress default plus one custom Disallow (/wp-content/uploads/wpo/wpo-plugins-tables-list.json).
+    No AI-crawler directives and no llms.txt reference.
+- path: /sitemap_index.xml
+  host: agnikul.in
+  status: 200
+  note: A single child sitemap listing nine pages. No posts sitemap; the Media hub is not a feed.
+
+summary:
+  hits: 4
+  misses: 34
+  security_txt: false
+  api_catalog: false
+  agent_card: false
+  apis_json: false
+  aauth: false
+  note: >-
+    Four real documents, all on shop.agnikul.in and all served by Shopify on Agnikul's own host. The
+    corporate domain agnikul.in serves no /.well-known/ document at all — its machine-readable
+    contribution is /llms.txt and /llms-full.txt instead. A WellKnown pointer is claimed on the
+    strength of the shop host's four 200s; no SecurityTxt and no AgentCard pointer is claimed,
+    because neither document exists on any host.

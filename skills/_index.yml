@@ -1,0 +1,48 @@
+generated: '2026-09-12'
+method: generated
+source: >-
+  Grounded in mcp/agnikul-ucp-mcp-tools.json (live tools/list, HTTP 200), the merchant profile at
+  https://shop.agnikul.in/.well-known/ucp (200), the store's own agent instructions at
+  https://shop.agnikul.in/agents.md (200) and https://shop.agnikul.in/robots.txt (200)
+name: Agnikul agent skills
+slug: agnikul
+
+note: >-
+  Agnikul publishes no first-party Agent Skill of its own; its store's agents.md instead recommends
+  the cross-store Shop skill at https://shop.app/SKILL.md, which is Shopify's, not Agnikul's. The
+  skills below are API Evangelist-authored packagings of the store's REAL, live tool surface — every
+  tool name, parameter path and requirement was read from the server's own tools/list response, and
+  nothing is invented.
+
+scope_warning: >-
+  All three skills operate the Cosmos Store MERCHANDISE surface. Agnikul's launch-services business
+  has no programmable surface, so no skill can be written for it. Each skill opens by saying so.
+
+api: Agnikul Cosmos Store Commerce MCP API
+endpoint: https://shop.agnikul.in/api/ucp/mcp
+
+skills:
+- name: agnikul-find-mission-merch
+  file: skills/agnikul-find-mission-merch.md
+  description: Search the Cosmos Store catalog and present accurate, correctly-denominated options to a buyer.
+  tools: [search_catalog, lookup_catalog, get_product]
+  write: false
+- name: agnikul-build-a-merch-cart
+  file: skills/agnikul-build-a-merch-cart.md
+  description: Assemble a cart, set the shipping destination, and convert it to a priced checkout.
+  tools: [create_cart, update_cart, get_cart, cancel_cart, create_checkout, get_checkout, update_checkout]
+  write: true
+- name: agnikul-complete-purchase-safely
+  file: skills/agnikul-complete-purchase-safely.md
+  description: Complete payment with buyer approval and an idempotency key, then confirm the order — and know what cannot be undone.
+  tools: [update_checkout, complete_checkout, cancel_checkout, get_order]
+  write: true
+
+provider_published_skills:
+- url: https://shop.app/SKILL.md
+  owner: Shopify (shop.app)
+  first_party_to_agnikul: false
+  recommended_by: https://shop.agnikul.in/agents.md
+  note: >-
+    Recorded because the store recommends it by name, not saved as an Agnikul artifact — it is a
+    cross-store Shopify skill, not this merchant's.

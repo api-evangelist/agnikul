@@ -1,0 +1,102 @@
+generated: '2026-09-12'
+method: probed
+source: >-
+  https://shop.agnikul.in/.well-known/ucp (HTTP 200), MCP initialize against
+  https://shop.agnikul.in/api/ucp/mcp (HTTP 200), DNS lookup of status.agnikul.in,
+  https://agnikul.in/media/ (HTTP 200)
+name: Agnikul API lifecycle
+slug: agnikul
+
+versioning:
+  published: true
+  scheme: dated protocol versions (YYYY-MM-DD), inherited from the Universal Commerce Protocol
+  current: '2026-08-25'
+  supported:
+  - version: '2026-08-25'
+    status: latest stable
+    transport: mcp
+    spec: https://ucp.dev/2026-08-25/specification/overview/
+  - version: '2026-04-08'
+    profile: https://40146b.myshopify.com/.well-known/ucp/2026-04-08
+    status: supported
+    transport: embedded
+    spec: https://ucp.dev/2026-04-08/specification/overview/
+  - version: '2026-01-23'
+    profile: https://40146b.myshopify.com/.well-known/ucp/2026-01-23
+    status: supported
+  discovery: https://shop.agnikul.in/.well-known/ucp
+  negotiation: >-
+    A client reads supported_versions from the merchant profile and selects one. Three concurrent
+    versions are advertised, so version selection is a real machine-readable operation rather than a
+    docs claim. The served version is echoed back in the x-shopify-ucp-mcp-api-version header.
+  mcp_protocol_version: '2025-06-18'
+  server_version:
+    name: universal-commerce
+    version: 0.1.0
+    source: MCP initialize response, serverInfo
+
+deprecation_policy:
+  published: false
+  sunset_header: not observed
+  deprecation_header: not observed
+  rfc8594: false
+  note: >-
+    No deprecation or sunset policy is published by Agnikul, and no RFC 8594 Deprecation or Sunset
+    header was returned on any probed response. The dated-version ladder implies older versions are
+    eventually retired, but no removal date, notice period or migration guide is stated. No
+    Deprecation pointer is claimed.
+
+status_page:
+  published: false
+  probed:
+  - url: https://status.agnikul.in/
+    result: DNS does not resolve
+    checked: '2026-09-12'
+  note: >-
+    No first-party status page for the API surface. Storefront and MCP availability ride on Shopify's
+    platform status, which Agnikul does not link from any of its own agent-facing documents. No
+    StatusPage pointer is claimed.
+
+sla:
+  published: false
+  note: No uptime or latency commitment is published for the agent surface.
+
+changelog:
+  published: false
+  note: >-
+    No API changelog or release notes. Protocol change is legible only through the dated
+    supported_versions list in /.well-known/ucp. No ChangeLog pointer is claimed. The corporate Media
+    hub at https://agnikul.in/media/ carries press releases, blogs and podcasts about the launch
+    programme, not API change.
+
+deprecated_operations: []
+deprecated_operations_note: >-
+  No tool in the live tools/list response is marked deprecated, and the contract carries no
+  deprecation annotation vocabulary.
+
+content_freshness:
+  llms_txt_last_verified: '2026-07-23'
+  source: https://agnikul.in/llms.txt
+  note: >-
+    Unusually, the corporate llms.txt carries its own freshness stamp and flags which of its claims
+    are time-sensitive (flight status, manifest, funding, pricing), directing readers to /missions/
+    and /media/ for the current position. That is a lifecycle signal most providers do not publish.
+
+support:
+  channels:
+  - address: payloadpeople@agnikul.in
+    purpose: customer and payload enquiries
+  - address: curious@agnikul.in
+    purpose: general enquiries
+  - address: vendor_relations@agnikul.in
+    purpose: vendor enquiries
+  - address: humancapital@agnikul.in
+    purpose: careers
+  - url: https://agnikul.in/contact-us/
+    http_status: 200
+    type: contact form
+  developer_support: none
+  note: >-
+    Four routed email addresses and a contact form, all sales/HR/vendor oriented. There is no
+    developer support channel, forum, Discord or issue tracker for the agent surface, and no contact
+    address specific to the store.

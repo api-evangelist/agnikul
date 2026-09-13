@@ -1,0 +1,210 @@
+generated: '2026-09-12'
+method: probed
+source: >-
+  https://shop.agnikul.in/.well-known/ucp (HTTP 200) named the dev.ucp.shopping service; MCP
+  initialize and tools/list POSTed live to https://shop.agnikul.in/api/ucp/mcp (HTTP 200) and
+  https://shop.agnikul.in/api/mcp (HTTP 200) on 2026-09-12
+name: Agnikul Cosmos Store Model Context Protocol servers
+slug: agnikul
+
+scope_warning: >-
+  READ THIS BEFORE USING THIS RECORD. Agnikul Cosmos is a launch-vehicle manufacturer, and it
+  publishes NO API for its launch-services business — no developer portal, no OpenAPI, no mission or
+  manifest API. The MCP servers below belong to Cosmos Store, the company's branded merchandise
+  storefront at shop.agnikul.in. They sell t-shirts, hoodies, mugs, caps and mission patches. The
+  company's own /llms.txt says so plainly: "Cosmos Store: Merchandise. Not relevant to launch
+  services or technical questions." This is a real, live, anonymous agent surface on a host Agnikul
+  controls, and it is recorded as exactly that and nothing more.
+
+ownership:
+  note: >-
+    The MCP endpoints answer on shop.agnikul.in, an Agnikul subdomain, and the store is Agnikul's own
+    Shopify tenant. The UCP merchant profile served there names merchant_name "Cosmos Store" and
+    merchant_origin "shop.agnikul.in"; the storefront HTML declares "shopId":85860712758; and the
+    Google Pay handler's tokenization_specification carries gatewayMerchantId "85860712758", the same
+    id that appears in the OIDC issuer https://shopify.com/authentication/85860712758 served from the
+    same host. A Shopify shop id belongs to exactly one merchant, so this is Agnikul's surface
+    running on its commerce platform, not another company's.
+  platform_note: >-
+    The UCP/MCP capability itself is Shopify's, enabled across Shopify stores — Agnikul authored the
+    catalog, not the protocol implementation. Recorded as a platform-provided surface served on the
+    company's own host.
+  evidence:
+  - url: https://shop.agnikul.in/.well-known/ucp
+    signal: 'payment_handlers["com.google.pay"][0].config.merchant_info.merchant_name = "Cosmos Store", merchant_origin = "shop.agnikul.in"'
+    http_status: 200
+  - url: https://shop.agnikul.in/
+    signal: '"shopId":85860712758 in the storefront HTML'
+    http_status: 200
+  - url: https://shop.agnikul.in/.well-known/openid-configuration
+    signal: 'issuer https://shopify.com/authentication/85860712758'
+    http_status: 200
+
+deployment:
+  mode: remote
+  endpoint: https://shop.agnikul.in/api/ucp/mcp
+  install: null
+  package: null
+  auth: none
+  verified: probed
+  note: >-
+    Remote only. There is no first-party stdio package — nothing to npx or pip install. The endpoint
+    answers an unauthenticated JSON-RPC initialize and tools/list. Buyer payment credentials are
+    supplied per-call inside the checkout payment instrument, not as a server credential. The same
+    server also answers on the Shopify permanent domain https://40146b.myshopify.com/api/ucp/mcp,
+    which is the endpoint the machine-readable UCP profile names.
+
+endpoint_agreement:
+  claim: >-
+    https://shop.agnikul.in/agents.md and /llms.txt both instruct agents to POST to
+    https://shop.agnikul.in/api/ucp/mcp.
+  observed: >-
+    That URL answers HTTP 200 with a full tools/list. The UCP discovery document names the permanent
+    domain form https://40146b.myshopify.com/api/ucp/mcp instead; both were probed and both answer
+    200 with identical tool sets. Unlike some Shopify merchants, Agnikul's documented endpoint
+    actually works — an agent following the instructions verbatim reaches the server.
+  probed: '2026-09-12'
+  evidence:
+  - url: https://shop.agnikul.in/api/ucp/mcp
+    method: POST
+    http_status: 200
+  - url: https://40146b.myshopify.com/api/ucp/mcp
+    method: POST
+    http_status: 200
+  - url: https://shop.agnikul.in/api/mcp
+    method: POST
+    http_status: 200
+
+servers:
+- name: Cosmos Store UCP Commerce MCP
+  endpoint: https://shop.agnikul.in/api/ucp/mcp
+  alternate_endpoint: https://40146b.myshopify.com/api/ucp/mcp
+  transport: streamable-http
+  protocol_version: '2025-06-18'
+  server_info:
+    name: universal-commerce
+    version: 0.1.0
+  capabilities:
+    tools:
+      listChanged: true
+    prompts:
+      listChanged: true
+    resources:
+      listChanged: true
+    logging: {}
+  auth: none
+  status: live
+  tools_file: mcp/agnikul-ucp-mcp-tools.json
+  tool_count: 13
+  tools:
+  - name: search_catalog
+    category: catalog
+    write: false
+    summary: >-
+      Search store products by natural-language query and/or filters (categories, price min/max in
+      minor units, available). At least one of query or filters is required. Cursor-paginated,
+      default limit 10.
+  - name: lookup_catalog
+    category: catalog
+    write: false
+    summary: >-
+      Resolve multiple product or variant GIDs in one request; results are grouped by product and
+      marked "featured" (product id) or exact (variant id).
+  - name: get_product
+    category: catalog
+    write: false
+    summary: >-
+      Full product detail for one identifier, with variants, exact pricing and real-time
+      availability; supports interactive option selection via selected and preferences.
+  - name: get_cart
+    category: cart
+    write: false
+    summary: Return cart contents for a gid://shopify/Cart/... identifier.
+  - name: create_cart
+    category: cart
+    write: true
+    summary: Create a cart from line items, with optional buyer, context, attribution, fulfillment and discount codes.
+  - name: update_cart
+    category: cart
+    write: true
+    summary: Update line items, buyer, context, fulfillment or discount codes on an existing cart.
+  - name: cancel_cart
+    category: cart
+    write: true
+    reverses: create_cart
+    summary: Cancel a cart.
+  - name: get_checkout
+    category: checkout
+    write: false
+    summary: Return checkout detail including line items, totals, discounts and taxes.
+  - name: create_checkout
+    category: checkout
+    write: true
+    summary: >-
+      Create a checkout from line items or an existing cart_id, carrying buyer, fulfillment methods
+      and destinations, discount codes and payment instruments.
+  - name: update_checkout
+    category: checkout
+    write: true
+    summary: Update an existing checkout — line items, buyer, fulfillment selection, discounts, payment instruments.
+  - name: complete_checkout
+    category: checkout
+    write: true
+    summary: >-
+      Finalize the purchase and return the order ID and Thank You Page URL, or any errors
+      encountered. The ONLY tool whose meta.required includes "idempotency-key"; the store's own
+      agent instructions additionally require contemporaneous buyer approval of payment.
+  - name: cancel_checkout
+    category: checkout
+    write: true
+    reverses: create_checkout
+    summary: Cancel a checkout that has not been completed.
+  - name: get_order
+    category: order
+    write: false
+    summary: Return order detail for a gid://shopify/Order/... identifier.
+
+- name: Cosmos Store Storefront MCP
+  endpoint: https://shop.agnikul.in/api/mcp
+  transport: streamable-http
+  auth: none
+  status: live
+  tools_file: mcp/agnikul-storefront-mcp-tools.json
+  tool_count: 1
+  tools:
+  - name: search_shop_policies_and_faqs
+    category: support
+    write: false
+    summary: >-
+      Natural-language question answering over the store's policies, products and services. Note that
+      Cosmos Store publishes no policy pages at all — every /policies/* path returns 404 — so this
+      tool is answering over a thin or empty corpus.
+
+protocols:
+- name: Universal Commerce Protocol
+  id: dev.ucp.shopping
+  version: '2026-08-25'
+  supported_versions:
+  - '2026-08-25'
+  - '2026-04-08'
+  - '2026-01-23'
+  discovery: https://shop.agnikul.in/.well-known/ucp
+  spec: https://ucp.dev/2026-08-25/specification/overview/
+  schema: https://ucp.dev/2026-08-25/services/shopping/mcp.openrpc.json
+- name: Model Context Protocol
+  version: '2025-06-18'
+  transport: streamable-http (JSON-RPC 2.0 over HTTP POST)
+
+notes:
+- >-
+  meta.ucp-agent (carrying the calling agent's UCP profile URI) is a REQUIRED input on every one of
+  the 13 UCP tools. An agent that omits it is not conformant with this server's schema.
+- >-
+  All monetary values in requests and responses are integers in ISO 4217 minor units paired with a
+  currency code — {"amount": 2500, "currency": "USD"} is $25.00. The catalogue is priced in INR.
+- >-
+  Eleven products are listed at /collections/all/products.json, priced INR 99 to INR 1,499. The
+  entire agent-addressable inventory is mission merchandise.
+- >-
+  There is no first-party Agnikul SDK, CLI or stdio MCP package. The remote endpoints are the whole
+  programmable surface.
