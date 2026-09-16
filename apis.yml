@@ -33,6 +33,20 @@ tags:
 - E-Commerce
 - Agentic Commerce
 - Universal Commerce Protocol
+- MCP
+- Shopify
+tags_raw:
+- Company
+- Aerospace
+- Space
+- Launch Services
+- Satellites
+- Manufacturing
+- Additive Manufacturing
+- India
+- E-Commerce
+- Agentic Commerce
+- Universal Commerce Protocol
 - Model Context Protocol
 - Shopify
 maintainers:
@@ -59,6 +73,13 @@ apis:
     2026-09-12. The machine-readable /.well-known/ucp profile names the equivalent Shopify permanent
     domain form https://40146b.myshopify.com/api/ucp/mcp; both answer with identical tool sets.
   tags:
+  - Commerce
+  - Catalog
+  - Cart
+  - Checkout
+  - Order
+  - Agentic Commerce
+  tags_raw:
   - Commerce
   - Catalog
   - Cart
@@ -103,6 +124,11 @@ apis:
     eleven products on 2026-09-12. The sibling api entry deliberately carries a longer base
     (/api/ucp/mcp) because the MCP endpoint is a single POST target, not a path space.
   tags:
+  - Product
+  - Collection
+  - Catalog
+  - Sitemap
+  tags_raw:
   - Products
   - Collections
   - Catalog
