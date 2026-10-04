@@ -107,6 +107,9 @@ apis:
     url: errors/agnikul-problem-types.yml
   - type: RateLimits
     url: rate-limits/agnikul-rate-limits.yml
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: ucp
 - aid: agnikul:agnikul-cosmos-store-storefront-json-api
   name: Agnikul Cosmos Store Storefront JSON API
   description: >-
@@ -138,6 +141,9 @@ apis:
     url: https://shop.agnikul.in/agents.md
   - type: LLMsTxt
     url: llms/agnikul-shop-llms.txt
+  x-surface: platform-generated
+  x-platform: shopify
+  x-platform-surface: storefront-json
 common:
 - type: Website
   url: https://agnikul.in/
