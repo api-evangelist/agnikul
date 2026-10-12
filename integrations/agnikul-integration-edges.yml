@@ -1,0 +1,18 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/agnikul/integrations
+- https://zapier.com/apps/agnikul-cosmos/integrations
+- https://n8n.io/integrations/agnikul/
+- https://composio.dev/toolkits/agnikul
+- https://monid.ai/tools/agnikul
+checked:
+- https://composio.dev/toolkits/agnikul
+- https://monid.ai/tools/agnikul
+- https://n8n.io/integrations/agnikul/
+- https://zapier.com/apps/agnikul-cosmos/integrations
+- https://zapier.com/apps/agnikul/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
